@@ -170,7 +170,6 @@ nav h1 a {
   display: block;
   margin: 0;
   max-width: 100%;
-  min-height: 248px;
   min-width: 100%;
 }
 #restaurants-list li h1 {
@@ -328,5 +327,16 @@ nav h1 a {
 
   #restaurant-img, #restaurant-cuisine {
     width: 95%;
+  }
+}
+
+@media screen and (min-width: 950px) {
+  #restaurants-list {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  #restaurants-list li {
+    width: calc(50% - 100px);
   }
 }
