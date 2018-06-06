@@ -291,7 +291,8 @@ a.skip-link:focus {
 }
 #reviews-list li {
   background-color: #fff;
-    border: 2px solid #f3f3f3;
+  border: 2px solid #f3f3f3;
+  border-top-left-radius: 40px;
   display: block;
   list-style-type: none;
   margin: 0 0 30px;
@@ -306,6 +307,24 @@ a.skip-link:focus {
 }
 #restaurant-hours td {
   color: #666;
+}
+.review-name {
+  float: left;
+}
+.review-date {
+  text-align: right;
+}
+#reviews-list li p.review-rating {
+  background-color: orange;
+  color: white;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  letter-spacing: 0.1em;
+  font-size: 1.0em;
+  font-weight: bold;
+  display: inline-block;
 }
 
 /* ====================== Media Queries ====================== */
