@@ -4,13 +4,49 @@
 class DBHelper {
 
   /**
+   * IndexedDB
+   */
+  static openDatabase() {    
+    if (!navigator.serviceWorker) {
+      return Promise.resolve();
+    }
+    return idb.open('restaurant-reviews', 1, function(upgradeDb) {
+      upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
+    });
+  }
+
+  /**
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
-    fetch('http://localhost:1337/restaurants')
-      .then(response => response.json())
-      .then(function(myJson) {
-        callback(null, myJson);
+    // open IndexedDB and get all restaurants, if 'restaurants' db exists
+    return DBHelper.openDatabase()
+      .then(function(db) {
+        return db.transaction('restaurants', 'readonly')
+          .objectStore('restaurants')
+          .getAll();
+      })
+      .then(function(data) {
+        // if there are results, use them
+        if (data.length > 0) {
+          callback(null, data);
+        } else {
+          // otherwise fetch data from the API & store them in db, then use them
+          fetch('http://localhost:1337/restaurants')
+            .then(response => response.json())
+            .then(function(data) {
+              DBHelper.openDatabase()
+                .then(function(db) {
+                  const tx = db.transaction('restaurants', 'readwrite');
+                  const store = tx.objectStore('restaurants');
+                  data.forEach(function(restaurant) {
+                    store.put(restaurant);
+                  })
+                });
+              callback(null, data);
+            })
+            .catch(error => callback(error, null));
+        }
       });
   }
 

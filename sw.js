@@ -9,11 +9,11 @@ self.addEventListener('install', function(event) {
   var urlsToCache = [
     '/',
     '/restaurant.html',
-    '/data/restaurants.json',
     '/img/',
     '/css/styles.css',
     '/js/dbhelper.js',
     '/js/main.js',
+    '/js/idb.js',
     '/js/restaurant_info.js'
   ];
 
