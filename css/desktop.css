@@ -1,0 +1,10 @@
+@media screen and (min-width: 950px) {
+  #restaurants-list {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  #restaurants-list li {
+    width: calc(50% - 100px);
+  }
+}

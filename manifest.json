@@ -1,0 +1,13 @@
+{
+    "short_name": "Restaurants",
+    "name": "Restaurant Reviews",
+    "icons": [{
+        "src": "/img/fork.png",
+        "type": "image/png",
+        "sizes": "512x512"
+    }],
+    "start_url": "/",
+    "background_color": "#FFF",
+    "theme_color": "#3397DB",
+    "display": "standalone"
+}

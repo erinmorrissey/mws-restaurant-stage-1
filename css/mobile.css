@@ -1,0 +1,36 @@
+@media screen and (max-width: 670px) {
+  nav h1 a {
+    font-size: 0.5em;
+    letter-spacing: 0.5em;
+  }
+
+  #breadcrumb {
+    width: calc(100% - 80px);
+  }
+
+  .inside #map-container {
+    position: absolute;
+    left: 0;
+    top: 130px;
+    height: 300px;
+    width: 100%;
+  }
+
+  #restaurant-container {
+    padding-top: 450px;
+    padding-left: 20px;
+  }
+
+  #reviews-container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  #restaurant-container, #reviews-container {
+    width: 90%;
+  }
+
+  #restaurant-img, #restaurant-cuisine {
+    width: 95%;
+  }
+}
