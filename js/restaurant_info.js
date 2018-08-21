@@ -21,6 +21,57 @@ window.initMap = () => {
 }
 
 /**
+ * Handle reviews form submission
+ */
+
+let form = this.document.getElementById('reviews-form');
+form.addEventListener("submit", (event) => postReviewData(event));
+  // .then(data => console.log("DATA :", data))
+  // .catch(error => console.error("ERROR: ", error)));
+
+function postReviewData(event) {
+  event.preventDefault();
+
+  const url = `http://localhost:1337/reviews/`;
+
+  const id = getParameterByName('id');
+  const name = this.document.getElementById('name').value;
+  const rating = this.document.getElementById('rating').value;
+  const comment = this.document.getElementById('comment').value;
+
+  console.log("***** FORM STUFF: ", id, name, rating, comment);
+
+  const formData = {
+    "restaurant_id": id,
+    "name": name,
+    "rating": rating,
+    "comments": comment
+  };
+
+  console.log('EVENT: ', event);
+  console.log('FORM POSTED!');
+
+  // Default options are marked with *
+  return fetch(url, {
+      method: "POST",
+      // mode: "cors", // no-cors, cors, *same-origin
+      // cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+      // credentials: "same-origin", // include, same-origin, *omit
+      headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          // "Content-Type": "application/x-www-form-urlencoded",
+      },
+      // redirect: "follow", // manual, *follow, error
+      // referrer: "no-referrer", // no-referrer, *client
+      body: JSON.stringify(formData), // body data type must match "Content-Type" header
+  })
+  .then(function(response) {
+    document.getElementById('reviews-form').reset();
+    return response.json();
+  });
+}
+
+/**
  * Get current restaurant from page URL.
  */
 fetchRestaurantFromURL = (callback) => {
