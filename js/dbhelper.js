@@ -10,8 +10,9 @@ class DBHelper {
     if (!navigator.serviceWorker) {
       return Promise.resolve();
     }
-    return idb.open('restaurant-reviews', 1, function(upgradeDb) {
+    return idb.open('restaurant-DB', 1, function(upgradeDb) {
       upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
+      upgradeDb.createObjectStore('reviews', { keyPath: 'id' });
     });
   }
 
@@ -51,6 +52,45 @@ class DBHelper {
   }
 
   /**
+   * Fetch all reviews.
+   */
+  static fetchReviews(id, callback) {
+    // open IndexedDB and get all reviews, if 'reviews' db exists
+    return DBHelper.openDatabase()
+      .then(function(db) {
+        return db.transaction('reviews', 'readonly')
+          .objectStore('reviews')
+          .getAll();
+      })
+      .then(function(data) {
+        console.log("***** id: ", id);
+        console.log("***** data from the DB: ", data);
+        // if there are results, use them
+        if (data.find( restaurant => restaurant.restaurant_id == id )) {
+          console.log("WE'RE USING CACHED REVIEW RESULTS");
+          callback(null, data);
+        } else {
+          console.log("WE'RE NOT USING CACHED REVIEW RESULTS, WE'RE FETCHING THEM");
+          // otherwise fetch data from the API & store them in db, then use them
+          fetch('http://localhost:1337/reviews/?restaurant_id=' + id)
+            .then(response => response.json())
+            .then(function(data) {
+              DBHelper.openDatabase()
+                .then(function(db) {
+                  const tx = db.transaction('reviews', 'readwrite');
+                  const store = tx.objectStore('reviews');
+                  data.forEach(function(review) {
+                    store.put(review);
+                  })
+                });
+              callback(null, data);
+            })
+            .catch(error => callback(error, null));
+        }
+      });
+  }
+
+  /**
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id, callback) {
@@ -59,11 +99,33 @@ class DBHelper {
       if (error) {
         callback(error, null);
       } else {
+        console.log("restaurants object: ", restaurants);
         const restaurant = restaurants.find(r => r.id == id);
         if (restaurant) { // Got the restaurant
           callback(null, restaurant);
         } else { // Restaurant does not exist in the database
           callback('Restaurant does not exist', null);
+        }
+      }
+    });
+  }
+
+  /**
+   * Fetch a review by its restaurant ID.
+   */
+  static fetchReviewsById(id, callback) {
+    // fetch all reviews with proper error handling.
+    DBHelper.fetchReviews(id, (error, reviews) => {
+      if (error) {
+        callback(error, null);
+      } else {
+        console.log("id: ", id);
+        console.log("reviews object: ", reviews);
+        const review = reviews.filter(r => r.restaurant_id == id);
+        if (review) { // Got the review
+          callback(null, review);
+        } else { // Review does not exist in the database
+          callback('Review does not exist', null);
         }
       }
     });
