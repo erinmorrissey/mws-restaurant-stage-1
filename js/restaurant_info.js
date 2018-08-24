@@ -23,7 +23,6 @@ window.initMap = () => {
 /**
  * Handle reviews form submission
  */
-
 let form = this.document.getElementById('reviews-form');
 form.addEventListener("submit", (event) => postReviewData(event));
   // .then(data => console.log("DATA :", data))
@@ -34,9 +33,9 @@ function postReviewData(event) {
 
   const url = `http://localhost:1337/reviews/`;
 
-  const id = getParameterByName('id');
+  const id = Number(getParameterByName('id'));
   const name = this.document.getElementById('name').value;
-  const rating = this.document.getElementById('rating').value;
+  const rating = Number(this.document.getElementById('rating').value);
   const comment = this.document.getElementById('comment').value;
 
   console.log("***** FORM STUFF: ", id, name, rating, comment);
@@ -68,7 +67,16 @@ function postReviewData(event) {
   .then(function(response) {
     document.getElementById('reviews-form').reset();
     return response.json();
-  });
+  })
+  .then(function(data) {
+    DBHelper.openDatabase()
+      .then(function(db) {
+        const tx = db.transaction('reviews', 'readwrite');
+        const store = tx.objectStore('reviews');
+        store.put(data);
+      });
+  })
+  .then(createNewReviewHTML(formData));
 }
 
 /**
@@ -173,9 +181,9 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   console.log("fillReviewsHTML was called");
   console.log("REVIEWS: ", reviews);
   const container = document.getElementById('reviews-container');
-  const title = document.createElement('h3');
-  title.innerHTML = 'Reviews';
-  container.appendChild(title);
+  // const title = document.createElement('h3');
+  // title.innerHTML = 'Reviews';
+  // container.appendChild(title);
 
   if (!reviews || reviews.length === 0) {
     const noReviews = document.createElement('p');
@@ -184,6 +192,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     return;
   }
   const ul = document.getElementById('reviews-list');
+  ul.innerHTML = '';
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
   });
@@ -215,6 +224,34 @@ createReviewHTML = (review) => {
   li.appendChild(comments);
 
   return li;
+}
+
+/**
+ * Create HTML for newly submitted review and add it to the webpage.
+ */
+createNewReviewHTML = (data) => {
+  const li = document.createElement('li');
+  const name = document.createElement('p');
+  name.innerHTML = data.name;
+  name.className = 'review-name';
+  li.appendChild(name);
+
+  const date = document.createElement('p');
+  date.innerHTML = new Date().toLocaleString();
+  date.className = 'review-date';
+  li.appendChild(date);
+
+  const rating = document.createElement('p');
+  rating.innerHTML = `Rating: ${data.rating}`;
+  rating.className = 'review-rating';
+  li.appendChild(rating);
+
+  const comments = document.createElement('p');
+  comments.innerHTML = data.comments;
+  li.appendChild(comments);
+
+  const ul = document.getElementById('reviews-list');
+  ul.appendChild(li);
 }
 
 /**

@@ -38,39 +38,41 @@
       <table id="restaurant-hours"></table>
     </section>
 
+    <!-- REVIEWS FORM -->
+    <form id="reviews-form">
+      <h3>Add a Review</h3>
+      <section>
+        <div>
+          <label for="name">
+            <span>Your Name:</span>
+          </label>
+          <input type="text" id="name" name="name">
+        </div>
+        <div>
+          <label for="rating">
+            <span>Your Rating:</span>
+          </label>
+          <select id="rating" name="rating">
+            <option value="5">5</option>
+            <option value="4">4</option>
+            <option value="3">3</option>
+            <option value="2">2</option>
+            <option value="1">1</option>
+          </select>
+        </div>
+        <div>
+          <label for="comment">
+            <span>Your Review Comments:</span>
+          </label>
+          <textarea id="comment" name="comment" cols="30" rows="10"></textarea>
+        </div>
+      </section>
+      <button type="submit">Submit Review</button>
+    </form>
+    <!-- END REVIEWS FORM -->
+
     <section id="reviews-container">
-      <!-- REVIEWS FORM -->
-      <form id="reviews-form">
-        <h3>Add a Review</h3>
-        <section>
-          <div>
-            <label for="name">
-              <span>Your Name:</span>
-            </label>
-            <input type="text" id="name" name="name">
-          </div>
-          <div>
-            <label for="rating">
-              <span>Your Rating:</span>
-            </label>
-            <select id="rating" name="rating">
-              <option value="5">5</option>
-              <option value="4">4</option>
-              <option value="3">3</option>
-              <option value="2">2</option>
-              <option value="1">1</option>
-            </select>
-          </div>
-          <div>
-            <label for="comment">
-              <span>Your Review Comments:</span>
-            </label>
-            <textarea id="comment" name="comment" cols="30" rows="10"></textarea>
-          </div>
-        </section>
-        <button type="submit">Submit Review</button>
-      </form>
-      <!-- END REVIEWS FORM -->
+      <h3>Reviews</h3>
       <ul id="reviews-list"></ul>
     </section>
   </main>
