@@ -176,6 +176,10 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
  * Create restaurant HTML.
  */
 createRestaurantHTML = (restaurant) => {
+  // handle boolean/string is_favorite issue
+  let isFav = isFavToBoolean(restaurant.is_favorite);
+  console.log("id: ", restaurant.id, "is_favorite: ", isFav);
+
   const li = document.createElement('li');
 
   const image = document.createElement('img');
@@ -189,6 +193,23 @@ createRestaurantHTML = (restaurant) => {
   const name = document.createElement('h2');
   name.innerHTML = restaurant.name;
   li.append(name);
+
+  const favorite = document.createElement('button');
+  favorite.innerHTML = '♥';
+  if (isFav) {
+    favorite.className = 'fav';
+  }
+  li.append(favorite);
+
+  favorite.onclick = function() {
+    this.classList.toggle('fav');
+    if (!navigator.onLine) {
+      storeFavStatusOffline(restaurant.id, !isFav);
+      return;
+    }
+    DBHelper.updateFavStatus(restaurant.id, !isFav);
+    isFav = !isFav;
+  };
 
   const neighborhood = document.createElement('p');
   neighborhood.innerHTML = restaurant.neighborhood;
@@ -205,6 +226,38 @@ createRestaurantHTML = (restaurant) => {
 
   return li
 }
+
+function isFavToBoolean(data) {
+  if (data === false || data === 'false' || data === undefined) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Store favorite data in localStorage.
+ */
+let favItems = [];
+
+function storeFavStatusOffline(id, isFav) {
+  const favData = {
+    "restaurant_id": id,
+    "is_favorite": isFav
+  }
+  localStorage.setItem('favorite_' + id, JSON.stringify(favData));
+  favItems.push('favorite_' + id);
+  console.log("STORED!");
+}
+
+window.addEventListener('online', (event) => {
+  console.log("*** ONLINE ***");
+  favItems.forEach(function(favItem) {
+    let reviewData = JSON.parse(localStorage.getItem(favItem));
+    DBHelper.updateFavStatus(reviewData.restaurant_id, reviewData.is_favorite);
+  });
+  localStorage.clear();
+  favItems = [];
+});
 
 /**
  * Add markers for current restaurants to the map.

@@ -217,6 +217,10 @@ a.skip-link:focus {
   letter-spacing: .1em;
 }
 
+.fav {
+  color: red;
+}
+
 /* ====================== Restaurant Details ====================== */
 .inside header {
   position: fixed;

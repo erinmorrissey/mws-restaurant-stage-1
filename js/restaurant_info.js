@@ -30,7 +30,7 @@ window.addEventListener('online', (event) => {
   console.log("*** ONLINE ***");
   const reviewData = JSON.parse(localStorage.getItem('review'));
   postReviewData(reviewData, true);
-  Storage.clear();
+  localStorage.clear();
 });
 
 /**

@@ -91,6 +91,28 @@ class DBHelper {
   }
 
   /**
+   * Handle updating restaurant is_favorite status.
+   */
+  static updateFavStatus(id, isFav) {
+    console.log("updating FAV status, status is currently: ", isFav);
+    const url = `http://localhost:1337/restaurants/${id}/?is_favorite=${isFav}`
+    console.log("url: ", url);
+    fetch(url, { method: 'PUT' })
+      .then(() => {
+        this.openDatabase()
+          .then(db => {
+            const tx = db.transaction('restaurants', 'readwrite');
+            const store = tx.objectStore('restaurants');
+            store.get(id)
+              .then(restaurant => {
+                restaurant.is_favorite = isFav;
+                store.put(restaurant);
+              });
+          })
+      });
+  }
+
+  /**
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id, callback) {
