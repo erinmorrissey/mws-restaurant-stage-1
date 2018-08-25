@@ -190,19 +190,16 @@ createRestaurantHTML = (restaurant) => {
   image.alt = DBHelper.altTagForRestaurant(restaurant);
   li.append(image);
 
-  const name = document.createElement('h2');
-  name.innerHTML = restaurant.name;
-  li.append(name);
-
   const favorite = document.createElement('button');
   favorite.innerHTML = '♥';
+  favorite.className = 'fav-button'
   if (isFav) {
-    favorite.className = 'fav';
+    favorite.classList.add('is-fav');
   }
   li.append(favorite);
 
   favorite.onclick = function() {
-    this.classList.toggle('fav');
+    this.classList.toggle('is-fav');
     if (!navigator.onLine) {
       storeFavStatusOffline(restaurant.id, !isFav);
       return;
@@ -210,6 +207,10 @@ createRestaurantHTML = (restaurant) => {
     DBHelper.updateFavStatus(restaurant.id, !isFav);
     isFav = !isFav;
   };
+
+  const name = document.createElement('h2');
+  name.innerHTML = restaurant.name;
+  li.append(name);
 
   const neighborhood = document.createElement('p');
   neighborhood.innerHTML = restaurant.neighborhood;

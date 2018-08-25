@@ -217,7 +217,15 @@ a.skip-link:focus {
   letter-spacing: .1em;
 }
 
-.fav {
+.fav-button {
+  color: grey;
+  border: none;
+  font-size: 200%;
+  float: right;
+  margin: 9px -12px 0 10px;
+}
+
+.is-fav {
   color: red;
 }
 
