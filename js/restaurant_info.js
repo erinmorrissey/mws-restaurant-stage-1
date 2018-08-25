@@ -21,17 +21,34 @@ window.initMap = () => {
 }
 
 /**
- * Handle reviews form submission
+ * EVENT LISTENERS
  */
 let form = this.document.getElementById('reviews-form');
-form.addEventListener("submit", (event) => postReviewData(event));
-  // .then(data => console.log("DATA :", data))
-  // .catch(error => console.error("ERROR: ", error)));
+form.addEventListener("submit", (event) => handleReviewEvent(event));
 
-function postReviewData(event) {
+window.addEventListener('online', (event) => {
+  console.log("*** ONLINE ***");
+  const reviewData = JSON.parse(localStorage.getItem('review'));
+  postReviewData(reviewData, true);
+  Storage.clear();
+});
+
+/**
+ * Check if online or not
+ */
+function isOffline() {
+  console.log('called isOnline');
+  if (!navigator.onLine) {
+    console.log("*** OFFLINE ***");
+    return true;
+  }
+  return false;
+}
+
+function handleReviewEvent(event) {
   event.preventDefault();
 
-  const url = `http://localhost:1337/reviews/`;
+  console.log('EVENT: ', event);
 
   const id = Number(getParameterByName('id'));
   const name = this.document.getElementById('name').value;
@@ -47,8 +64,20 @@ function postReviewData(event) {
     "comments": comment
   };
 
-  console.log('EVENT: ', event);
-  console.log('FORM POSTED!');
+  postReviewData(formData);
+}
+
+/**
+ * Handle reviews form submission
+ */
+function postReviewData(formData, offlinePost = false) {
+  const url = `http://localhost:1337/reviews/`;
+
+  if (isOffline()) {
+    console.log('storing review offline');
+    storeReviewOffline(formData);
+    return;
+  }
 
   // Default options are marked with *
   return fetch(url, {
@@ -76,7 +105,21 @@ function postReviewData(event) {
         store.put(data);
       });
   })
-  .then(createNewReviewHTML(formData));
+  .then(function() {
+    if (!offlinePost) {
+      createNewReviewHTML(formData);
+    }
+  });
+}
+
+/**
+ * Store review form data in localStorage.
+ */
+function storeReviewOffline(reviewData) {
+  localStorage.setItem('review', JSON.stringify(reviewData));
+  console.log("STORED!");
+  createNewReviewHTML(reviewData);
+  document.getElementById('reviews-form').reset();
 }
 
 /**
@@ -204,6 +247,8 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
  */
 createReviewHTML = (review) => {
   const li = document.createElement('li');
+  li.className = 'review-item';
+
   const name = document.createElement('p');
   name.innerHTML = review.name;
   name.className = 'review-name';
@@ -231,6 +276,12 @@ createReviewHTML = (review) => {
  */
 createNewReviewHTML = (data) => {
   const li = document.createElement('li');
+  li.className = 'review-item';
+
+  if (isOffline()) {
+    li.className += ' offline';
+  }
+
   const name = document.createElement('p');
   name.innerHTML = data.name;
   name.className = 'review-name';
