@@ -195,11 +195,13 @@ createRestaurantHTML = (restaurant) => {
   favorite.className = 'fav-button'
   if (isFav) {
     favorite.classList.add('is-fav');
+    favorite.setAttribute('aria-label', 'Mark as favorite restaurant');
   }
   li.append(favorite);
 
   favorite.onclick = function() {
     this.classList.toggle('is-fav');
+    this.setAttribute('aria-label', 'Remove as favorite restaurant');
     if (!navigator.onLine) {
       storeFavStatusOffline(restaurant.id, !isFav);
       return;
