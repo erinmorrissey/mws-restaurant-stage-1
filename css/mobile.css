@@ -26,8 +26,12 @@
     padding-right: 20px;
   }
 
-  #restaurant-container, #reviews-container {
+  #restaurant-container, #reviews-container, #reviews-form {
     width: 90%;
+  }
+
+  #reviews-form {
+    max-width: 315px;
   }
 
   #restaurant-img, #restaurant-cuisine {
