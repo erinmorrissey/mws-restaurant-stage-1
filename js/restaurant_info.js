@@ -34,21 +34,6 @@ initMap = () => {
     }
   });
 }
-// window.initMap = () => {
-//   fetchRestaurantFromURL((error, restaurant) => {
-//     if (error) { // Got an error!
-//       console.error(error);
-//     } else {
-//       self.map = new google.maps.Map(document.getElementById('map'), {
-//         zoom: 16,
-//         center: restaurant.latlng,
-//         scrollwheel: false
-//       });
-//       fillBreadcrumb();
-//       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
-//     }
-//   });
-// }
 
 /**
  * EVENT LISTENERS
@@ -57,7 +42,6 @@ let form = this.document.getElementById('reviews-form');
 form.addEventListener("submit", (event) => handleReviewEvent(event));
 
 window.addEventListener('online', (event) => {
-  console.log("*** ONLINE ***");
   const reviewData = JSON.parse(localStorage.getItem('review'));
   postReviewData(reviewData, true);
   localStorage.clear();
@@ -67,9 +51,7 @@ window.addEventListener('online', (event) => {
  * Check if online or not
  */
 function isOffline() {
-  console.log('called isOnline');
   if (!navigator.onLine) {
-    console.log("*** OFFLINE ***");
     return true;
   }
   return false;
@@ -78,14 +60,10 @@ function isOffline() {
 function handleReviewEvent(event) {
   event.preventDefault();
 
-  console.log('EVENT: ', event);
-
   const id = Number(getParameterByName('id'));
   const name = this.document.getElementById('name').value;
   const rating = Number(this.document.getElementById('rating').value);
   const comment = this.document.getElementById('comment').value;
-
-  console.log("***** FORM STUFF: ", id, name, rating, comment);
 
   const formData = {
     "restaurant_id": id,
@@ -104,23 +82,15 @@ function postReviewData(formData, offlinePost = false) {
   const url = `http://localhost:1337/reviews/`;
 
   if (isOffline()) {
-    console.log('storing review offline');
     storeReviewOffline(formData);
     return;
   }
 
-  // Default options are marked with *
   return fetch(url, {
       method: "POST",
-      // mode: "cors", // no-cors, cors, *same-origin
-      // cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      // credentials: "same-origin", // include, same-origin, *omit
       headers: {
           "Content-Type": "application/json; charset=utf-8",
-          // "Content-Type": "application/x-www-form-urlencoded",
       },
-      // redirect: "follow", // manual, *follow, error
-      // referrer: "no-referrer", // no-referrer, *client
       body: JSON.stringify(formData), // body data type must match "Content-Type" header
   })
   .then(function(response) {
@@ -147,7 +117,6 @@ function postReviewData(formData, offlinePost = false) {
  */
 function storeReviewOffline(reviewData) {
   localStorage.setItem('review', JSON.stringify(reviewData));
-  console.log("STORED!");
   createNewReviewHTML(reviewData);
   document.getElementById('reviews-form').reset();
 }
@@ -156,7 +125,6 @@ function storeReviewOffline(reviewData) {
  * Get current restaurant from page URL.
  */
 fetchRestaurantFromURL = (callback) => {
-  console.log("fetchRestaurantFromURL called");
   if (self.restaurant) { // restaurant already fetched!
     callback(null, self.restaurant)
     return;
@@ -175,7 +143,6 @@ fetchRestaurantFromURL = (callback) => {
       fillRestaurantHTML();
       fetchReviewsFromURL();
       callback(null, restaurant);
-      console.log("reached end of fetchRestaurantFromURL and the id is: ", id);
     });
   }
 }
@@ -184,21 +151,18 @@ fetchRestaurantFromURL = (callback) => {
  * Get reviews from page URL.
  */
 fetchReviewsFromURL = (callback) => {
-  console.log("fetchReviewsFromURL called");
   const id = getParameterByName('id');
   if (!id) { // no id found in URL
     error = 'No restaurant id in URL'
     callback(error, null);
   } else {
     DBHelper.fetchReviewsById(id, (error, reviews) => {
-      console.log("YAY! reviews: ", reviews);
       self.reviews = reviews;
       if (!reviews) {
         console.error(error);
         return;
       }
       fillReviewsHTML(reviews);
-      console.log("reached end of fetchReviewsFromURL and the id is: ", id);
     });
   }
 }
@@ -251,12 +215,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  * Create all reviews HTML and add them to the webpage.
  */
 fillReviewsHTML = (reviews = self.restaurant.reviews) => {
-  console.log("fillReviewsHTML was called");
-  console.log("REVIEWS: ", reviews);
   const container = document.getElementById('reviews-container');
-  // const title = document.createElement('h3');
-  // title.innerHTML = 'Reviews';
-  // container.appendChild(title);
 
   if (!reviews || reviews.length === 0) {
     const noReviews = document.createElement('p');

@@ -63,14 +63,10 @@ class DBHelper {
           .getAll();
       })
       .then(function(data) {
-        console.log("***** id: ", id);
-        console.log("***** data from the DB: ", data);
         // if there are results, use them
         if (data.find( restaurant => restaurant.restaurant_id == id )) {
-          console.log("WE'RE USING CACHED REVIEW RESULTS");
           callback(null, data);
         } else {
-          console.log("WE'RE NOT USING CACHED REVIEW RESULTS, WE'RE FETCHING THEM");
           // otherwise fetch data from the API & store them in db, then use them
           fetch('http://localhost:1337/reviews/?restaurant_id=' + id)
             .then(response => response.json())
@@ -94,9 +90,7 @@ class DBHelper {
    * Handle updating restaurant is_favorite status.
    */
   static updateFavStatus(id, isFav) {
-    console.log("updating FAV status, status is currently: ", isFav);
     const url = `http://localhost:1337/restaurants/${id}/?is_favorite=${isFav}`
-    console.log("url: ", url);
     fetch(url, { method: 'PUT' })
       .then(() => {
         this.openDatabase()
@@ -121,7 +115,6 @@ class DBHelper {
       if (error) {
         callback(error, null);
       } else {
-        console.log("restaurants object: ", restaurants);
         const restaurant = restaurants.find(r => r.id == id);
         if (restaurant) { // Got the restaurant
           callback(null, restaurant);
@@ -141,8 +134,6 @@ class DBHelper {
       if (error) {
         callback(error, null);
       } else {
-        console.log("id: ", id);
-        console.log("reviews object: ", reviews);
         const review = reviews.filter(r => r.restaurant_id == id);
         if (review) { // Got the review
           callback(null, review);
@@ -276,15 +267,5 @@ class DBHelper {
       marker.addTo(newMap);
     return marker;
   }
-  // static mapMarkerForRestaurant(restaurant, map) {
-  //   const marker = new google.maps.Marker({
-  //     position: restaurant.latlng,
-  //     title: restaurant.name,
-  //     url: DBHelper.urlForRestaurant(restaurant),
-  //     map: map,
-  //     animation: google.maps.Animation.DROP}
-  //   );
-  //   return marker;
-  // }
 
 }

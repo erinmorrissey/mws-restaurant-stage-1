@@ -9,9 +9,8 @@ var markers = []
  */
 if (navigator.serviceWorker) {
   navigator.serviceWorker.register('./sw.js').then(function(reg) {
-    console.log('Yay, registered!');
+    console.log('SW registered!');
   }).catch(function(err) {
-    console.log('Boo, not registered!');
   });
 }
 
@@ -127,18 +126,6 @@ initMap = () => {
   }).addTo(newMap);
    updateRestaurants();
 }
-// window.initMap = () => {
-//   let loc = {
-//     lat: 40.722216,
-//     lng: -73.987501
-//   };
-//   self.map = new google.maps.Map(document.getElementById('map'), {
-//     zoom: 12,
-//     center: loc,
-//     scrollwheel: false
-//   });
-//   updateRestaurants();
-// }
 
 /**
  * Update page and map for current restaurants.
@@ -195,7 +182,6 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 createRestaurantHTML = (restaurant) => {
   // handle boolean/string is_favorite issue
   let isFav = isFavToBoolean(restaurant.is_favorite);
-  console.log("id: ", restaurant.id, "is_favorite: ", isFav);
 
   const li = document.createElement('li');
 
@@ -266,11 +252,9 @@ function storeFavStatusOffline(id, isFav) {
   }
   localStorage.setItem('favorite_' + id, JSON.stringify(favData));
   favItems.push('favorite_' + id);
-  console.log("STORED!");
 }
 
 window.addEventListener('online', (event) => {
-  console.log("*** ONLINE ***");
   favItems.forEach(function(favItem) {
     let reviewData = JSON.parse(localStorage.getItem(favItem));
     DBHelper.updateFavStatus(reviewData.restaurant_id, reviewData.is_favorite);
@@ -292,13 +276,3 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     }
   });
 }
-// addMarkersToMap = (restaurants = self.restaurants) => {
-//   restaurants.forEach(restaurant => {
-//     // Add marker to the map
-//     const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
-//     google.maps.event.addListener(marker, 'click', () => {
-//       window.location.href = marker.url
-//     });
-//     self.markers.push(marker);
-//   });
-// }
